@@ -1,0 +1,6 @@
+{
+  "name": "Cheque and Credit Tracker",
+  "description": "A responsive, single-person tool to track received cheques, credit invoices, outstanding balances, and daily collections.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
