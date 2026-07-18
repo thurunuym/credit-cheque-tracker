@@ -299,7 +299,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
                       {/* Shop Name */}
                       <td className="py-3.5 px-4 font-semibold text-gray-900">
-                        {cheque.shop || <span className="italic text-gray-400">No shop</span>}
+                        {cheque.shop || <span className="italic text-gray-400">Not added</span>}
                       </td>
 
                       {/* Bank */}
@@ -407,7 +407,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-semibold text-gray-900 text-sm">
-                        {cheque.shop || <span className="italic text-gray-400">No Shop</span>}
+                        {cheque.shop || <span className="italic text-gray-400">Not added</span>}
                       </h4>
                       <p className="text-2xs text-gray-500 font-medium">{cheque.bank}</p>
                       <p className="text-3xs text-gray-400 font-mono mt-0.5">#{cheque.chequeNumber}</p>
@@ -511,7 +511,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-2xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
-                    Shop / Customer
+                    Invoice no
                   </label>
                   <input
                     type="text"
