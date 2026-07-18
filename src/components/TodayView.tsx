@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Landmark, Receipt, Sparkles, Send, Coins, CreditCard, LandmarkIcon, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { Landmark, Receipt, Sparkles, Send, Coins, CreditCard, LandmarkIcon, Check, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { Cheque, CreditInvoice, PaymentMethod } from '../types';
 import { formatLKR, formatFriendlyDate, calculateBalance } from '../lib/api';
 
@@ -55,11 +55,22 @@ export default function TodayView({
   });
   const [isRecordingPayment, setIsRecordingPayment] = useState(false);
 
+  // Search input for outstanding collections
+  const [collectionSearchTerm, setCollectionSearchTerm] = useState('');
+
   // Filter out credit invoices that are outstanding from previous dates (before today)
   const outstandingInvoices = invoices.filter(inv => {
     const isBeforeToday = inv.invoiceDate < todayStr;
     const balance = calculateBalance(inv);
     return isBeforeToday && balance > 0;
+  });
+
+  const filteredOutstandingInvoices = outstandingInvoices.filter(inv => {
+    const matchesSearch =
+      (inv.shop && inv.shop.toLowerCase().includes(collectionSearchTerm.toLowerCase())) ||
+      (inv.invoiceNumber && inv.invoiceNumber.toLowerCase().includes(collectionSearchTerm.toLowerCase())) ||
+      collectionSearchTerm === '';
+    return matchesSearch;
   });
 
   const handleChequeSubmit = async (e: React.FormEvent) => {
@@ -147,7 +158,7 @@ export default function TodayView({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      
+
       {/* HTML5 Datalist for autocomplete shop names */}
       <datalist id="shops-datalist">
         {shops.map((shop, idx) => (
@@ -157,7 +168,7 @@ export default function TodayView({
 
       {/* Grid containing Quick-add forms */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        
+
         {/* ADD CHEQUE PANEL */}
         <div id="quick-add-cheque-card" className="rounded-xl border border-gray-200 bg-white p-5 shadow-xs">
           <div className="flex items-center space-x-3 border-b border-gray-100 pb-3">
@@ -260,8 +271,7 @@ export default function TodayView({
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <span className="text-2xs text-gray-400">Status defaults to <b className="text-amber-600">PENDING</b></span>
-              
+
               <button
                 id="btn-add-cheque-submit"
                 type="submit"
@@ -361,8 +371,7 @@ export default function TodayView({
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <span className="text-2xs text-gray-400">Instantly creates outstanding credit balance</span>
-              
+
               <button
                 id="btn-add-invoice-submit"
                 type="submit"
@@ -389,19 +398,29 @@ export default function TodayView({
 
       {/* TODAY'S CREDIT COLLECTIONS */}
       <div id="today-credit-collection-section" className="rounded-xl border border-gray-200 bg-white p-5 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-150 pb-4">
-          <div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-150 pb-4 gap-4">
+          <div className="flex-1">
             <h2 className="text-base font-semibold text-gray-900 flex items-center">
               <Sparkles className="h-4 w-4 mr-1.5 text-teal-600" />
-              Outstanding Collections Due Today
+              Credit Collections Today
             </h2>
-            <p className="text-xs text-gray-500 mt-1">
-              Outstanding credit invoices created prior to today. Record daily customer collections fast.
-            </p>
+
           </div>
-          <div className="mt-2 sm:mt-0">
-            <span className="inline-flex items-center rounded-md bg-teal-50 px-2 py-1 text-xs font-medium text-teal-700 ring-1 ring-inset ring-teal-600/10 font-mono">
-              {outstandingInvoices.length} Bills Available
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Search Bar */}
+            <div className="relative flex-1 sm:w-64">
+              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search shop or invoice no..."
+                value={collectionSearchTerm}
+                onChange={e => setCollectionSearchTerm(e.target.value)}
+                className="pl-8.5 pr-3 py-1.5 w-full rounded-lg border border-gray-300 text-xs shadow-2xs focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+              />
+            </div>
+            <span className="inline-flex items-center justify-center rounded-md bg-teal-50 px-2.5 py-1.5 text-xs font-medium text-teal-700 ring-1 ring-inset ring-teal-600/10 font-mono self-start sm:self-auto">
+              {filteredOutstandingInvoices.length} Bills Available
             </span>
           </div>
         </div>
@@ -414,9 +433,14 @@ export default function TodayView({
             <h3 className="mt-3 text-sm font-medium text-gray-900">All caught up!</h3>
             <p className="mt-1 text-xs text-gray-500">No outstanding invoices from prior days require collection.</p>
           </div>
+        ) : filteredOutstandingInvoices.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <h3 className="mt-3 text-sm font-medium text-gray-900">No matching collections</h3>
+            <p className="mt-1 text-xs text-gray-500">No bills match your search criteria. Try a different search term.</p>
+          </div>
         ) : (
           <div className="mt-4 grid grid-cols-1 gap-4">
-            {outstandingInvoices.map(invoice => {
+            {filteredOutstandingInvoices.map(invoice => {
               const balance = calculateBalance(invoice);
               const isExpanded = activePaymentInvoiceId === invoice.id;
 
@@ -424,11 +448,10 @@ export default function TodayView({
                 <div
                   key={invoice.id}
                   id={`collection-item-${invoice.id}`}
-                  className={`rounded-lg border transition-all ${
-                    isExpanded 
-                      ? 'border-teal-500 bg-teal-20/10 shadow-sm' 
-                      : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
-                  }`}
+                  className={`rounded-lg border transition-all ${isExpanded
+                    ? 'border-teal-500 bg-teal-20/10 shadow-sm'
+                    : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
+                    }`}
                 >
                   {/* Top Row / Card Header */}
                   <div className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -465,11 +488,10 @@ export default function TodayView({
                             handleOpenPaymentForm(invoice);
                           }
                         }}
-                        className={`inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-2xs border transition-colors cursor-pointer ${
-                          isExpanded
-                            ? 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                            : 'bg-teal-600 text-white border-transparent hover:bg-teal-700'
-                        }`}
+                        className={`inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-2xs border transition-colors cursor-pointer ${isExpanded
+                          ? 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                          : 'bg-teal-600 text-white border-transparent hover:bg-teal-700'
+                          }`}
                       >
                         <span>{isExpanded ? 'Cancel' : 'Collect'}</span>
                         {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -495,11 +517,10 @@ export default function TodayView({
                               <button
                                 type="button"
                                 onClick={() => setPaymentForm(p => ({ ...p, paymentMethod: 'cash' }))}
-                                className={`flex-1 flex items-center justify-center py-1.5 px-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                                  paymentForm.paymentMethod === 'cash'
-                                    ? 'bg-white text-gray-900 shadow-3xs border-gray-200'
-                                    : 'text-gray-500 hover:text-gray-900'
-                                }`}
+                                className={`flex-1 flex items-center justify-center py-1.5 px-2 rounded-md text-xs font-medium transition-all cursor-pointer ${paymentForm.paymentMethod === 'cash'
+                                  ? 'bg-white text-teal-900 shadow-3xs border border-teal-500 font-semibold'
+                                  : 'border border-transparent text-gray-500 hover:text-gray-900'
+                                  }`}
                               >
                                 <Coins className="h-3.5 w-3.5 mr-1 text-amber-500" />
                                 Cash
@@ -507,11 +528,10 @@ export default function TodayView({
                               <button
                                 type="button"
                                 onClick={() => setPaymentForm(p => ({ ...p, paymentMethod: 'cheque' }))}
-                                className={`flex-1 flex items-center justify-center py-1.5 px-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                                  paymentForm.paymentMethod === 'cheque'
-                                    ? 'bg-white text-gray-900 shadow-3xs border-gray-200'
-                                    : 'text-gray-500 hover:text-gray-900'
-                                }`}
+                                className={`flex-1 flex items-center justify-center py-1.5 px-2 rounded-md text-xs font-medium transition-all cursor-pointer ${paymentForm.paymentMethod === 'cheque'
+                                  ? 'bg-white text-teal-900 shadow-3xs border border-teal-500 font-semibold'
+                                  : 'border border-transparent text-gray-500 hover:text-gray-900'
+                                  }`}
                               >
                                 <CreditCard className="h-3.5 w-3.5 mr-1 text-teal-500" />
                                 Cheque
@@ -519,11 +539,10 @@ export default function TodayView({
                               <button
                                 type="button"
                                 onClick={() => setPaymentForm(p => ({ ...p, paymentMethod: 'banked' }))}
-                                className={`flex-1 flex items-center justify-center py-1.5 px-2 rounded-md text-xs font-medium transition-all cursor-pointer ${
-                                  paymentForm.paymentMethod === 'banked'
-                                    ? 'bg-white text-gray-900 shadow-3xs border-gray-200'
-                                    : 'text-gray-500 hover:text-gray-900'
-                                }`}
+                                className={`flex-1 flex items-center justify-center py-1.5 px-2 rounded-md text-xs font-medium transition-all cursor-pointer ${paymentForm.paymentMethod === 'banked'
+                                  ? 'bg-white text-teal-900 shadow-3xs border border-teal-500 font-semibold'
+                                  : 'border border-transparent text-gray-500 hover:text-gray-900'
+                                  }`}
                               >
                                 <LandmarkIcon className="h-3.5 w-3.5 mr-1 text-blue-500" />
                                 Banked
@@ -569,13 +588,12 @@ export default function TodayView({
                             </label>
                             <input
                               type="text"
-                              placeholder="e.g. Received partial cash, bill receipt #512"
                               value={paymentForm.remarks}
                               onChange={e => setPaymentForm(prev => ({ ...prev, remarks: e.target.value }))}
                               className="block w-full rounded-lg border border-gray-300 px-3 py-1.5 text-xs shadow-2xs focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
                             />
                           </div>
-                          
+
                           <div className="md:col-span-3 flex justify-end">
                             <button
                               id={`btn-submit-collection-payment-${invoice.id}`}

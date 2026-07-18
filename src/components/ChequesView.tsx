@@ -32,10 +32,12 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
   // Filter logic
   const filteredCheques = cheques.filter(c => {
-    // Search filter
-    const matchesSearch = c.shop
-      ? c.shop.toLowerCase().includes(searchTerm.toLowerCase())
-      : searchTerm === '';
+    // Search filter (searches shop, cheque number and bank name)
+    const matchesSearch =
+      (c.shop && c.shop.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (c.chequeNumber && c.chequeNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (c.bank && c.bank.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      searchTerm === '';
 
     // Status filter
     const matchesStatus = statusFilter === 'ALL' || c.status === statusFilter;
@@ -51,7 +53,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
   // Calculations based on FILTERED cheques
   const totalAmount = filteredCheques.reduce((sum, c) => sum + c.amount, 0);
-  
+
   const pendingCheques = filteredCheques.filter(c => c.status === 'PENDING');
   const pendingAmount = pendingCheques.reduce((sum, c) => sum + c.amount, 0);
 
@@ -107,7 +109,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
   return (
     <div className="space-y-6 animate-fade-in">
-      
+
       {/* FILTER BAR PANEL */}
       <div id="cheques-filter-bar" className="rounded-xl border border-gray-200 bg-white p-4 shadow-3xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -124,16 +126,16 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Shop Name Search */}
+          {/* Shop Name / Cheque No Search */}
           <div>
             <label className="block text-2xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
-              Search Shop
+              Search Cheques
             </label>
             <div className="relative">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Type shop name..."
+                placeholder="Enter Cheque no or Invoice no"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className="pl-9 pr-3 py-1.5 w-full rounded-lg border border-gray-300 text-xs shadow-2xs focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
@@ -160,29 +162,37 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
           {/* Due Date From */}
           <div>
-            <label className="block text-2xs font-semibold text-gray-600 uppercase tracking-wider mb-1 flex items-center">
-              <Calendar className="h-3.5 w-3.5 mr-1 text-gray-400" />
+            <label className={`block text-2xs font-semibold uppercase tracking-wider mb-1 flex items-center transition-colors ${dateFrom ? 'text-teal-700' : 'text-gray-600'
+              }`}>
+              <Calendar className={`h-3.5 w-3.5 mr-1 transition-colors ${dateFrom ? 'text-teal-600' : 'text-gray-400'}`} />
               Due From
             </label>
             <input
               type="date"
               value={dateFrom}
               onChange={e => setDateFrom(e.target.value)}
-              className="px-3 py-1.5 w-full rounded-lg border border-gray-300 text-xs shadow-2xs focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+              className={`px-3 py-1.5 w-full rounded-lg border text-xs shadow-2xs focus:border-teal-600 focus:ring-1 focus:ring-teal-600 focus:outline-none transition-all ${dateFrom
+                ? 'border-teal-500 bg-teal-50/20 text-teal-900 font-semibold shadow-inner'
+                : 'border-gray-300 bg-white text-gray-700'
+                }`}
             />
           </div>
 
           {/* Due Date To */}
           <div>
-            <label className="block text-2xs font-semibold text-gray-600 uppercase tracking-wider mb-1 flex items-center">
-              <Calendar className="h-3.5 w-3.5 mr-1 text-gray-400" />
+            <label className={`block text-2xs font-semibold uppercase tracking-wider mb-1 flex items-center transition-colors ${dateTo ? 'text-teal-700' : 'text-gray-600'
+              }`}>
+              <Calendar className={`h-3.5 w-3.5 mr-1 transition-colors ${dateTo ? 'text-teal-600' : 'text-gray-400'}`} />
               Due To
             </label>
             <input
               type="date"
               value={dateTo}
               onChange={e => setDateTo(e.target.value)}
-              className="px-3 py-1.5 w-full rounded-lg border border-gray-300 text-xs shadow-2xs focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+              className={`px-3 py-1.5 w-full rounded-lg border text-xs shadow-2xs focus:border-teal-600 focus:ring-1 focus:ring-teal-600 focus:outline-none transition-all ${dateTo
+                ? 'border-teal-500 bg-teal-50/20 text-teal-900 font-semibold shadow-inner'
+                : 'border-gray-300 bg-white text-gray-700'
+                }`}
             />
           </div>
         </div>
@@ -190,7 +200,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
       {/* SUMMARY DASHBOARD GRID */}
       <div id="cheques-summary-dashboard" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        
+
         {/* TOTAL MATCHING CHEQUES */}
         <div className="rounded-xl border border-gray-200 bg-white p-4.5 shadow-2xs">
           <p className="text-2xs font-semibold text-gray-500 uppercase tracking-wider">Total Volume ({filteredCheques.length})</p>
@@ -208,8 +218,8 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
           </div>
           <p className="mt-1 font-mono text-xl font-bold text-amber-700">{formatLKR(pendingAmount)}</p>
           <div className="mt-2 w-full h-1 bg-amber-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-amber-500" 
+            <div
+              className="h-full bg-amber-500"
               style={{ width: totalAmount > 0 ? `${(pendingAmount / totalAmount) * 100}%` : '0%' }}
             ></div>
           </div>
@@ -223,8 +233,8 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
           </div>
           <p className="mt-1 font-mono text-xl font-bold text-green-700">{formatLKR(bankedAmount)}</p>
           <div className="mt-2 w-full h-1 bg-green-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-green-500" 
+            <div
+              className="h-full bg-green-500"
               style={{ width: totalAmount > 0 ? `${(bankedAmount / totalAmount) * 100}%` : '0%' }}
             ></div>
           </div>
@@ -238,8 +248,8 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
           </div>
           <p className="mt-1 font-mono text-xl font-bold text-red-700">{formatLKR(rejectedAmount)}</p>
           <div className="mt-2 w-full h-1 bg-red-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-red-500" 
+            <div
+              className="h-full bg-red-500"
               style={{ width: totalAmount > 0 ? `${(rejectedAmount / totalAmount) * 100}%` : '0%' }}
             ></div>
           </div>
@@ -249,7 +259,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
       {/* MAIN DATA LIST */}
       <div id="cheques-list-container" className="rounded-xl border border-gray-200 bg-white shadow-xs overflow-hidden">
-        
+
         {filteredCheques.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center px-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 text-gray-400">
@@ -273,8 +283,9 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-2xs font-bold text-gray-500 uppercase tracking-wider">
-                    <th className="py-3 px-4">Shop / Customer</th>
-                    <th className="py-3 px-4">Bank & Cheque No</th>
+                    <th className="py-3 px-4">Invoice No</th>
+                    <th className="py-3 px-4">Bank</th>
+                    <th className="py-3 px-4">Cheque No</th>
                     <th className="py-3 px-4 text-right">Amount</th>
                     <th className="py-3 px-4">Dates (Rec / Due)</th>
                     <th className="py-3 px-4 text-center">Status</th>
@@ -285,16 +296,20 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
                 <tbody className="divide-y divide-gray-150 text-xs text-gray-700">
                   {filteredCheques.map(cheque => (
                     <tr key={cheque.id} className="hover:bg-gray-50/50">
-                      
+
                       {/* Shop Name */}
                       <td className="py-3.5 px-4 font-semibold text-gray-900">
                         {cheque.shop || <span className="italic text-gray-400">No shop</span>}
                       </td>
 
-                      {/* Bank & Cheque ID */}
-                      <td className="py-3.5 px-4">
-                        <p className="font-medium text-gray-800">{cheque.bank}</p>
-                        <p className="font-mono text-3xs text-gray-400 mt-0.5">#{cheque.chequeNumber}</p>
+                      {/* Bank */}
+                      <td className="py-3.5 px-4 font-medium text-gray-800">
+                        {cheque.bank}
+                      </td>
+
+                      {/* Cheque No */}
+                      <td className="py-3.5 px-4 font-mono font-semibold text-gray-600">
+                        #{cheque.chequeNumber}
                       </td>
 
                       {/* Amount */}
@@ -312,13 +327,12 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
                       {/* Status */}
                       <td className="py-3.5 px-4 text-center">
-                        <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-3xs font-medium border font-semibold ${
-                          cheque.status === 'PENDING'
-                            ? 'bg-amber-50 text-amber-700 border-amber-200'
-                            : cheque.status === 'BANKED'
+                        <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-3xs font-medium border font-semibold ${cheque.status === 'PENDING'
+                          ? 'bg-amber-50 text-amber-700 border-amber-200'
+                          : cheque.status === 'BANKED'
                             ? 'bg-green-50 text-green-700 border-green-200'
                             : 'bg-red-50 text-red-700 border-red-200'
-                        }`}>
+                          }`}>
                           {cheque.status}
                         </span>
                       </td>
@@ -401,13 +415,12 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
                     <div className="text-right">
                       <p className="font-mono font-bold text-sm text-gray-950">{formatLKR(cheque.amount)}</p>
-                      <span className={`mt-1.5 inline-flex items-center rounded-md px-2 py-0.5 text-3xs font-medium border font-semibold ${
-                        cheque.status === 'PENDING'
-                          ? 'bg-amber-50 text-amber-700 border-amber-200'
-                          : cheque.status === 'BANKED'
+                      <span className={`mt-1.5 inline-flex items-center rounded-md px-2 py-0.5 text-3xs font-medium border font-semibold ${cheque.status === 'PENDING'
+                        ? 'bg-amber-50 text-amber-700 border-amber-200'
+                        : cheque.status === 'BANKED'
                           ? 'bg-green-50 text-green-700 border-green-200'
                           : 'bg-red-50 text-red-700 border-red-200'
-                      }`}>
+                        }`}>
                         {cheque.status}
                       </span>
                     </div>

@@ -1,0 +1,30 @@
+{
+  "cheques": [
+    {
+      "shop": "543",
+      "bank": "Amana",
+      "chequeNumber": "365139",
+      "amount": 21507,
+      "receivedDate": "2026-07-17",
+      "dueDate": "2026-08-10",
+      "remarks": "Kandy Mahanuwara Motors",
+      "status": "PENDING",
+      "createdAt": "2026-07-18T11:19:16.876Z",
+      "id": "6a5b613473f808754bc679a5"
+    },
+    {
+      "shop": "543",
+      "bank": "Amana",
+      "chequeNumber": "365139",
+      "amount": 21507,
+      "receivedDate": "2026-07-17",
+      "dueDate": "2026-08-10",
+      "remarks": "Kandy Mahanuwara Motors",
+      "status": "PENDING",
+      "createdAt": "2026-07-18T11:31:46.555Z",
+      "id": "6a5b642273f808754bc679a6"
+    }
+  ],
+  "creditInvoices": [],
+  "creditPayments": []
+}

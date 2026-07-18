@@ -1,6 +1,8 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import * as fs from 'fs';
 import * as path from 'path';
+import dotenv from 'dotenv';
+dotenv.config();
 import { Cheque, CreditInvoice, CreditPayment } from './src/types';
 
 // Path for local disk storage fallback if MONGODB_URI is not provided

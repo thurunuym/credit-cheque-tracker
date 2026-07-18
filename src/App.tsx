@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
-  fetchDbStatus, 
-  fetchCheques, 
-  fetchCredits, 
+import {
+  fetchDbStatus,
+  fetchCheques,
+  fetchCredits,
   fetchShops,
   addCheque,
   updateCheque,
@@ -32,7 +32,7 @@ export default function App() {
   const loadData = async () => {
     try {
       setError(null);
-      
+
       // Fetch DB status
       const dbStatus = await fetchDbStatus();
       setIsMongo(dbStatus.isMongo);
@@ -105,17 +105,17 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans antialiased text-gray-800">
-      
+
       {/* Header / Navbar */}
-      <Navbar 
-        currentTab={currentTab} 
-        setCurrentTab={setCurrentTab} 
-        isMongo={isMongo} 
+      <Navbar
+        currentTab={currentTab}
+        setCurrentTab={setCurrentTab}
+        isMongo={isMongo}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
+
         {/* Error Alert Display */}
         {error && (
           <div className="mb-6 rounded-lg bg-red-50 p-4 border border-red-200 shadow-3xs">
@@ -173,11 +173,9 @@ export default function App() {
         )}
       </main>
 
-      {/* Simple, Professional Footer */}
       <footer className="bg-white border-t border-gray-200 py-4.5 mt-12 text-center text-3xs font-medium text-gray-400 font-mono tracking-wider">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <span>&copy; {new Date().getFullYear()} HOME BUSINESS INTERNAL SYSTEM</span>
-          <span>CURRENCY: LKR (Rs.) &bull; OFFLINE-COMPATIBLE LEDGER</span>
+          <span>&copy; KELANI CABLES PLC.</span>
         </div>
       </footer>
 
