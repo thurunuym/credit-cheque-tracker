@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    const { default: app } = await import('../server');
+    const { default: app } = await import('../server.js');
     return (app as any)(req, res);
   } catch (err: any) {
     // Surface module-load / runtime errors instead of an opaque 500 so we can
