@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Landmark, Search, Filter, Calendar, Edit, Trash2, Check, AlertTriangle, X, CheckCircle2, ChevronRight, Coins } from 'lucide-react';
 import ShopAutocomplete from './ShopAutocomplete';
+import BankAutocomplete from './BankAutocomplete';
 import { Cheque, ChequeStatus } from '../types';
 import { formatLKR, formatFriendlyDate, formatDate } from '../lib/api';
 
@@ -526,11 +527,11 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
                   <label className="block text-2xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
                     Bank
                   </label>
-                  <input
-                    type="text"
-                    required
+                  <BankAutocomplete
                     value={editingCheque.bank}
-                    onChange={e => setEditingCheque(prev => prev ? ({ ...prev, bank: e.target.value }) : null)}
+                    onChange={val => setEditingCheque(prev => prev ? ({ ...prev, bank: val }) : null)}
+                    required
+                    placeholder="e.g. Commercial Bank"
                     className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-xs shadow-2xs focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
                   />
                 </div>

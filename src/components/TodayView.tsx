@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Landmark, Receipt, Sparkles, Send, Coins, CreditCard, LandmarkIcon, Check, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import ShopAutocomplete from './ShopAutocomplete';
+import BankAutocomplete from './BankAutocomplete';
 import { Cheque, CreditInvoice, PaymentMethod } from '../types';
 import { formatLKR, formatFriendlyDate, calculateBalance } from '../lib/api';
 
@@ -191,12 +192,11 @@ export default function TodayView({
 
               <div>
                 <label className="block text-xs font-medium text-gray-700">Bank <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
+                <BankAutocomplete
+                  value={chequeForm.bank}
+                  onChange={val => setChequeForm(prev => ({ ...prev, bank: val }))}
                   required
                   placeholder="e.g. Commercial Bank"
-                  value={chequeForm.bank}
-                  onChange={e => setChequeForm(prev => ({ ...prev, bank: e.target.value }))}
                   className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-2xs focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
                 />
               </div>
