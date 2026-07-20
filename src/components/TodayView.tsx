@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Landmark, Receipt, Sparkles, Send, Coins, CreditCard, LandmarkIcon, Check, ChevronDown, ChevronUp, Search } from 'lucide-react';
+import ShopAutocomplete from './ShopAutocomplete';
 import { Cheque, CreditInvoice, PaymentMethod } from '../types';
 import { formatLKR, formatFriendlyDate, calculateBalance } from '../lib/api';
 
@@ -159,12 +160,7 @@ export default function TodayView({
   return (
     <div className="space-y-8 animate-fade-in">
 
-      {/* HTML5 Datalist for autocomplete shop names */}
-      <datalist id="shops-datalist">
-        {shops.map((shop, idx) => (
-          <option key={idx} value={shop} />
-        ))}
-      </datalist>
+
 
       {/* Grid containing Quick-add forms */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -185,12 +181,10 @@ export default function TodayView({
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-xs font-medium text-gray-700">Shop / Customer</label>
-                <input
-                  type="text"
-                  placeholder="Type or select shop..."
-                  list="shops-datalist"
+                <ShopAutocomplete
                   value={chequeForm.shop}
-                  onChange={e => setChequeForm(prev => ({ ...prev, shop: e.target.value }))}
+                  onChange={val => setChequeForm(prev => ({ ...prev, shop: val }))}
+                  placeholder="Type or select shop..."
                   className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-2xs focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
                 />
               </div>
@@ -310,12 +304,10 @@ export default function TodayView({
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-xs font-medium text-gray-700">Shop / Customer</label>
-                <input
-                  type="text"
-                  placeholder="Type or select shop..."
-                  list="shops-datalist"
+                <ShopAutocomplete
                   value={invoiceForm.shop}
-                  onChange={e => setInvoiceForm(prev => ({ ...prev, shop: e.target.value }))}
+                  onChange={val => setInvoiceForm(prev => ({ ...prev, shop: val }))}
+                  placeholder="Type or select shop..."
                   className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-2xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                 />
               </div>
