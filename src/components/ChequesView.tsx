@@ -238,27 +238,33 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
         {/* TODAY CHEQUES SUMMARY (CLICKABLE) */}
         <div
           onClick={() => setShowDueModal(true)}
-          className="rounded-xl border border-gray-200 bg-teal-25/40 p-4.5 shadow-2xs cursor-pointer hover:bg-teal-50/50 hover:shadow-xs transition-all duration-200 group"
+          className="rounded-xl border border-gray-200 bg-teal-25/40 p-4.5 shadow-2xs cursor-pointer hover:bg-teal-50/50 hover:shadow-xs transition-all duration-200 group flex items-center justify-between"
         >
-          <div className="flex justify-between items-center">
-            <p className="text-2xs font-semibold text-teal-800 uppercase tracking-wider group-hover:underline">Due Today ({todayChequesCount})</p>
-            <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+          <div className="space-y-1">
+            <p className="text-2xs font-semibold text-teal-800 uppercase tracking-wider group-hover:underline">Due Today</p>
+            <p className="mt-1 font-mono text-xl font-bold text-teal-700">{formatLKR(todayChequesAmount)}</p>
+            <div className="text-4xs text-gray-500 font-semibold uppercase tracking-wider">Click to view details</div>
           </div>
-          <p className="mt-1 font-mono text-xl font-bold text-teal-700">{formatLKR(todayChequesAmount)}</p>
-          <div className="mt-2 text-3xs text-gray-500 font-medium">Click to view details</div>
+          <div className="flex flex-col items-center justify-center bg-teal-100/70 border border-teal-200 rounded-lg px-3 py-1.5 min-w-[3.5rem] shadow-3xs">
+            <span className="text-xl font-black text-teal-900 leading-none">{todayChequesCount}</span>
+            <span className="text-4xs font-bold text-teal-700 uppercase tracking-wider mt-0.5">Cheques</span>
+          </div>
         </div>
 
         {/* TOMORROW CHEQUES SUMMARY (CLICKABLE) */}
         <div
           onClick={() => setShowDueModal(true)}
-          className="rounded-xl border border-gray-200 bg-sky-25/40 p-4.5 shadow-2xs cursor-pointer hover:bg-sky-50/50 hover:shadow-xs transition-all duration-200 group"
+          className="rounded-xl border border-gray-200 bg-sky-25/40 p-4.5 shadow-2xs cursor-pointer hover:bg-sky-50/50 hover:shadow-xs transition-all duration-200 group flex items-center justify-between"
         >
-          <div className="flex justify-between items-center">
-            <p className="text-2xs font-semibold text-sky-800 uppercase tracking-wider group-hover:underline">Due Tomorrow ({tomorrowChequesCount})</p>
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+          <div className="space-y-1">
+            <p className="text-2xs font-semibold text-sky-800 uppercase tracking-wider group-hover:underline">Due Tomorrow</p>
+            <p className="mt-1 font-mono text-xl font-bold text-sky-700">{formatLKR(tomorrowChequesAmount)}</p>
+            <div className="text-4xs text-gray-500 font-semibold uppercase tracking-wider">Click to view details</div>
           </div>
-          <p className="mt-1 font-mono text-xl font-bold text-sky-700">{formatLKR(tomorrowChequesAmount)}</p>
-          <div className="mt-2 text-3xs text-gray-500 font-medium">Click to view details</div>
+          <div className="flex flex-col items-center justify-center bg-sky-100/70 border border-sky-200 rounded-lg px-3 py-1.5 min-w-[3.5rem] shadow-3xs">
+            <span className="text-xl font-black text-sky-900 leading-none">{tomorrowChequesCount}</span>
+            <span className="text-4xs font-bold text-sky-700 uppercase tracking-wider mt-0.5">Cheques</span>
+          </div>
         </div>
 
       </div>
