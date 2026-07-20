@@ -23,6 +23,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
   // Editing Cheque State
   const [editingCheque, setEditingCheque] = useState<Cheque | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDueModal, setShowDueModal] = useState(false);
 
   // Quick helper to reset filters to see all cheques
   const handleClearFilters = () => {
@@ -59,11 +60,18 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
   const pendingCheques = filteredCheques.filter(c => c.status === 'PENDING');
   const pendingAmount = pendingCheques.reduce((sum, c) => sum + c.amount, 0);
 
-  const bankedCheques = filteredCheques.filter(c => c.status === 'BANKED');
-  const bankedAmount = bankedCheques.reduce((sum, c) => sum + c.amount, 0);
+  // Calculations for Today/Tomorrow upcoming cheques (based on ALL cheques)
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
-  const rejectedCheques = filteredCheques.filter(c => c.status === 'REJECTED');
-  const rejectedAmount = rejectedCheques.reduce((sum, c) => sum + c.amount, 0);
+  const todayChequesList = cheques.filter(c => c.dueDate === todayStr);
+  const todayChequesCount = todayChequesList.length;
+  const todayChequesAmount = todayChequesList.reduce((sum, c) => sum + c.amount, 0);
+
+  const tomorrowChequesList = cheques.filter(c => c.dueDate === tomorrowStr);
+  const tomorrowChequesCount = tomorrowChequesList.length;
+  const tomorrowChequesAmount = tomorrowChequesList.reduce((sum, c) => sum + c.amount, 0);
 
   // Handle Quick Status Switch
   const handleQuickStatusUpdate = async (chequeId: string, nextStatus: ChequeStatus) => {
@@ -227,34 +235,30 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
           </div>
         </div>
 
-        {/* BANKED CHEQUES SUMMARY */}
-        <div className="rounded-xl border border-gray-200 bg-green-25/40 p-4.5 shadow-2xs">
+        {/* TODAY CHEQUES SUMMARY (CLICKABLE) */}
+        <div
+          onClick={() => setShowDueModal(true)}
+          className="rounded-xl border border-gray-200 bg-teal-25/40 p-4.5 shadow-2xs cursor-pointer hover:bg-teal-50/50 hover:shadow-xs transition-all duration-200 group"
+        >
           <div className="flex justify-between items-center">
-            <p className="text-2xs font-semibold text-green-800 uppercase tracking-wider">Banked ({bankedCheques.length})</p>
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            <p className="text-2xs font-semibold text-teal-800 uppercase tracking-wider group-hover:underline">Due Today ({todayChequesCount})</p>
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
           </div>
-          <p className="mt-1 font-mono text-xl font-bold text-green-700">{formatLKR(bankedAmount)}</p>
-          <div className="mt-2 w-full h-1 bg-green-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-green-500"
-              style={{ width: totalAmount > 0 ? `${(bankedAmount / totalAmount) * 100}%` : '0%' }}
-            ></div>
-          </div>
+          <p className="mt-1 font-mono text-xl font-bold text-teal-700">{formatLKR(todayChequesAmount)}</p>
+          <div className="mt-2 text-3xs text-gray-500 font-medium">Click to view details</div>
         </div>
 
-        {/* REJECTED CHEQUES SUMMARY */}
-        <div className="rounded-xl border border-gray-200 bg-red-25/40 p-4.5 shadow-2xs">
+        {/* TOMORROW CHEQUES SUMMARY (CLICKABLE) */}
+        <div
+          onClick={() => setShowDueModal(true)}
+          className="rounded-xl border border-gray-200 bg-sky-25/40 p-4.5 shadow-2xs cursor-pointer hover:bg-sky-50/50 hover:shadow-xs transition-all duration-200 group"
+        >
           <div className="flex justify-between items-center">
-            <p className="text-2xs font-semibold text-red-800 uppercase tracking-wider">Rejected ({rejectedCheques.length})</p>
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+            <p className="text-2xs font-semibold text-sky-800 uppercase tracking-wider group-hover:underline">Due Tomorrow ({tomorrowChequesCount})</p>
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
           </div>
-          <p className="mt-1 font-mono text-xl font-bold text-red-700">{formatLKR(rejectedAmount)}</p>
-          <div className="mt-2 w-full h-1 bg-red-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-red-500"
-              style={{ width: totalAmount > 0 ? `${(rejectedAmount / totalAmount) * 100}%` : '0%' }}
-            ></div>
-          </div>
+          <p className="mt-1 font-mono text-xl font-bold text-sky-700">{formatLKR(tomorrowChequesAmount)}</p>
+          <div className="mt-2 text-3xs text-gray-500 font-medium">Click to view details</div>
         </div>
 
       </div>
@@ -641,6 +645,112 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* DUE CHEQUES MODAL POPUP */}
+      {showDueModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-xs">
+          <div className="w-full max-w-4xl rounded-xl border border-gray-200 bg-white p-6 shadow-xl animate-scale-in flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between border-b border-gray-150 pb-3">
+              <h3 className="text-base font-semibold text-gray-900 flex items-center">
+                <Landmark className="h-4 w-4 mr-1.5 text-teal-600" />
+                Upcoming Due Cheques Overview
+              </h3>
+              <button
+                onClick={() => setShowDueModal(false)}
+                className="p-1 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-700 cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto mt-4 py-2 pr-1">
+              
+              {/* Due Today Panel */}
+              <div className="space-y-4">
+                <h4 className="sticky top-0 bg-white pb-2 text-xs font-bold text-teal-800 uppercase tracking-wider border-b border-teal-100 flex justify-between items-center">
+                  <span>Due Today ({todayChequesCount})</span>
+                  <span className="font-mono text-teal-900 text-xs font-semibold">{formatLKR(todayChequesAmount)}</span>
+                </h4>
+                
+                {todayChequesList.length === 0 ? (
+                  <p className="text-xs text-gray-400 italic py-4">No cheques due today.</p>
+                ) : (
+                  <div className="space-y-2.5 max-h-[50vh] overflow-y-auto pr-1">
+                    {todayChequesList.map(c => (
+                      <div key={c.id} className="p-3 rounded-lg border border-gray-150 bg-gray-50/50 flex flex-col gap-1 text-xs">
+                        <div className="flex justify-between items-start">
+                          <span className="font-semibold text-gray-900 leading-tight">{c.shop || 'Unknown Shop'}</span>
+                          <span className="font-bold text-gray-950 font-mono">{formatLKR(c.amount)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-3xs text-gray-500 font-mono mt-0.5">
+                          <span>Bank: <b>{c.bank}</b> (#{c.chequeNumber})</span>
+                          <span className={`inline-flex items-center rounded-md px-1.5 py-0.25 text-4xs font-semibold border ${
+                            c.status === 'PENDING'
+                              ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : c.status === 'BANKED'
+                                ? 'bg-green-50 text-green-700 border-green-200'
+                                : 'bg-red-50 text-red-700 border-red-200'
+                          }`}>
+                            {c.status}
+                          </span>
+                        </div>
+                        {c.remarks && <p className="text-3xs text-gray-400 italic mt-0.5 border-l-2 border-gray-200 pl-1.5">“{c.remarks}”</p>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Due Tomorrow Panel */}
+              <div className="space-y-4">
+                <h4 className="sticky top-0 bg-white pb-2 text-xs font-bold text-sky-800 uppercase tracking-wider border-b border-sky-100 flex justify-between items-center">
+                  <span>Due Tomorrow ({tomorrowChequesCount})</span>
+                  <span className="font-mono text-sky-900 text-xs font-semibold">{formatLKR(tomorrowChequesAmount)}</span>
+                </h4>
+                
+                {tomorrowChequesList.length === 0 ? (
+                  <p className="text-xs text-gray-400 italic py-4">No cheques due tomorrow.</p>
+                ) : (
+                  <div className="space-y-2.5 max-h-[50vh] overflow-y-auto pr-1">
+                    {tomorrowChequesList.map(c => (
+                      <div key={c.id} className="p-3 rounded-lg border border-gray-150 bg-gray-50/50 flex flex-col gap-1 text-xs">
+                        <div className="flex justify-between items-start">
+                          <span className="font-semibold text-gray-900 leading-tight">{c.shop || 'Unknown Shop'}</span>
+                          <span className="font-bold text-gray-950 font-mono">{formatLKR(c.amount)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-3xs text-gray-500 font-mono mt-0.5">
+                          <span>Bank: <b>{c.bank}</b> (#{c.chequeNumber})</span>
+                          <span className={`inline-flex items-center rounded-md px-1.5 py-0.25 text-4xs font-semibold border ${
+                            c.status === 'PENDING'
+                              ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : c.status === 'BANKED'
+                                ? 'bg-green-50 text-green-700 border-green-200'
+                                : 'bg-red-50 text-red-700 border-red-200'
+                          }`}>
+                            {c.status}
+                          </span>
+                        </div>
+                        {c.remarks && <p className="text-3xs text-gray-400 italic mt-0.5 border-l-2 border-gray-200 pl-1.5">“{c.remarks}”</p>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            <div className="flex justify-end pt-3 border-t border-gray-150 mt-4">
+              <button
+                type="button"
+                onClick={() => setShowDueModal(false)}
+                className="rounded-lg bg-gray-900 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-gray-800 cursor-pointer"
+              >
+                Close Details
+              </button>
+            </div>
           </div>
         </div>
       )}
