@@ -213,7 +213,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
 
         {/* TOTAL MATCHING CHEQUES */}
         <div className="rounded-xl border border-gray-200 bg-white p-4.5 shadow-2xs">
-          <p className="text-2xs font-semibold text-gray-500 uppercase tracking-wider">Total Volume ({filteredCheques.length})</p>
+          <p style={{ fontSize: '11px' }} className="font-semibold text-gray-500 uppercase tracking-wider">Total Volume ({filteredCheques.length})</p>
           <p className="mt-1 font-mono text-xl font-bold text-gray-900">{formatLKR(totalAmount)}</p>
           <div className="mt-2 w-full h-1 bg-gray-100 rounded-full overflow-hidden">
             <div className="h-full bg-gray-400" style={{ width: '100%' }}></div>
@@ -223,7 +223,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
         {/* PENDING CHEQUES SUMMARY */}
         <div className="rounded-xl border border-gray-200 bg-amber-25/40 p-4.5 shadow-2xs">
           <div className="flex justify-between items-center">
-            <p className="text-2xs font-semibold text-amber-800 uppercase tracking-wider">Pending ({pendingCheques.length})</p>
+            <p style={{ fontSize: '11px' }} className="font-semibold text-amber-800 uppercase tracking-wider">Pending ({pendingCheques.length})</p>
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
           </div>
           <p className="mt-1 font-mono text-xl font-bold text-amber-700">{formatLKR(pendingAmount)}</p>
@@ -241,13 +241,13 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
           className="rounded-xl border border-gray-200 bg-teal-25/40 p-4.5 shadow-2xs cursor-pointer hover:bg-teal-50/50 hover:shadow-xs transition-all duration-200 group flex items-center justify-between"
         >
           <div className="space-y-1">
-            <p className="text-2xs font-semibold text-teal-800 uppercase tracking-wider group-hover:underline">Due Today</p>
+            <p style={{ fontSize: '11px' }} className="font-semibold text-teal-800 uppercase tracking-wider group-hover:underline">Due Today</p>
             <p className="mt-1 font-mono text-xl font-bold text-teal-700">{formatLKR(todayChequesAmount)}</p>
-            <div className="text-4xs text-gray-500 font-semibold uppercase tracking-wider">Click to view details</div>
+            <div style={{ fontSize: '9px' }} className="text-gray-500 font-semibold uppercase tracking-wider">Click to view details</div>
           </div>
           <div className="flex flex-col items-center justify-center bg-teal-100/70 border border-teal-200 rounded-lg px-3 py-1.5 min-w-[3.5rem] shadow-3xs">
             <span className="text-xl font-black text-teal-900 leading-none">{todayChequesCount}</span>
-            <span className="text-4xs font-bold text-teal-700 uppercase tracking-wider mt-0.5">Cheques</span>
+            <span style={{ fontSize: '9px' }} className="font-bold text-teal-700 uppercase tracking-wider mt-0.5">Cheques</span>
           </div>
         </div>
 
@@ -257,13 +257,13 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
           className="rounded-xl border border-gray-200 bg-sky-25/40 p-4.5 shadow-2xs cursor-pointer hover:bg-sky-50/50 hover:shadow-xs transition-all duration-200 group flex items-center justify-between"
         >
           <div className="space-y-1">
-            <p className="text-2xs font-semibold text-sky-800 uppercase tracking-wider group-hover:underline">Due Tomorrow</p>
+            <p style={{ fontSize: '11px' }} className="font-semibold text-sky-800 uppercase tracking-wider group-hover:underline">Due Tomorrow</p>
             <p className="mt-1 font-mono text-xl font-bold text-sky-700">{formatLKR(tomorrowChequesAmount)}</p>
-            <div className="text-4xs text-gray-500 font-semibold uppercase tracking-wider">Click to view details</div>
+            <div style={{ fontSize: '9px' }} className="text-gray-500 font-semibold uppercase tracking-wider">Click to view details</div>
           </div>
           <div className="flex flex-col items-center justify-center bg-sky-100/70 border border-sky-200 rounded-lg px-3 py-1.5 min-w-[3.5rem] shadow-3xs">
             <span className="text-xl font-black text-sky-900 leading-none">{tomorrowChequesCount}</span>
-            <span className="text-4xs font-bold text-sky-700 uppercase tracking-wider mt-0.5">Cheques</span>
+            <span style={{ fontSize: '9px' }} className="font-bold text-sky-700 uppercase tracking-wider mt-0.5">Cheques</span>
           </div>
         </div>
 
@@ -295,13 +295,14 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-2xs font-bold text-gray-500 uppercase tracking-wider">
-                    <th className="py-3 px-4">Invoice No</th>
+                    <th className="py-3 px-4">Shop</th>
                     <th className="py-3 px-4">Bank</th>
                     <th className="py-3 px-4">Cheque No</th>
                     <th className="py-3 px-4 text-right">Amount</th>
-                    <th className="py-3 px-4">Dates (Rec / Due)</th>
+                    <th className="py-3 px-4">Rec Date</th>
+                    <th className="py-3 px-4">Due Date</th>
                     <th className="py-3 px-4 text-center">Status</th>
-                    <th className="py-3 px-4">Remarks</th>
+                    <th className="py-3 px-4">Invoice no / Remarks</th>
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -315,26 +316,28 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
                       </td>
 
                       {/* Bank */}
-                      <td className="py-3.5 px-4 font-medium text-gray-800">
+                      <td className="py-3.5 px-4 font-semibold text-sm text-gray-800">
                         {cheque.bank}
                       </td>
 
                       {/* Cheque No */}
-                      <td className="py-3.5 px-4 font-mono font-semibold text-gray-600">
+                      <td className="py-3.5 px-4 font-mono font-semibold text-sm text-gray-600">
                         #{cheque.chequeNumber}
                       </td>
 
                       {/* Amount */}
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-gray-900">
+                      <td className="py-3.5 px-4 text-right font-mono font-bold text-sm text-gray-950">
                         {formatLKR(cheque.amount)}
                       </td>
 
-                      {/* Dates */}
-                      <td className="py-3.5 px-4">
-                        <div className="space-y-0.5">
-                          <p className="text-3xs text-gray-500">Rec: <b className="font-mono">{formatDate(cheque.receivedDate)}</b></p>
-                          <p className="text-3xs text-gray-700">Due: <b className="font-mono font-semibold text-teal-700">{formatDate(cheque.dueDate)}</b></p>
-                        </div>
+                      {/* Rec Date */}
+                      <td className="py-3.5 px-4 font-mono text-gray-600 font-medium">
+                        {formatDate(cheque.receivedDate)}
+                      </td>
+
+                      {/* Due Date */}
+                      <td className="py-3.5 px-4 font-mono font-semibold text-teal-700">
+                        {formatDate(cheque.dueDate)}
                       </td>
 
                       {/* Status */}
@@ -673,14 +676,14 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto mt-4 py-2 pr-1">
-              
+
               {/* Due Today Panel */}
               <div className="space-y-4">
                 <h4 className="sticky top-0 bg-white pb-2 text-xs font-bold text-teal-800 uppercase tracking-wider border-b border-teal-100 flex justify-between items-center">
                   <span>Due Today ({todayChequesCount})</span>
                   <span className="font-mono text-teal-900 text-xs font-semibold">{formatLKR(todayChequesAmount)}</span>
                 </h4>
-                
+
                 {todayChequesList.length === 0 ? (
                   <p className="text-xs text-gray-400 italic py-4">No cheques due today.</p>
                 ) : (
@@ -693,13 +696,12 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
                         </div>
                         <div className="flex justify-between items-center text-3xs text-gray-500 font-mono mt-0.5">
                           <span>Bank: <b>{c.bank}</b> (#{c.chequeNumber})</span>
-                          <span className={`inline-flex items-center rounded-md px-1.5 py-0.25 text-4xs font-semibold border ${
-                            c.status === 'PENDING'
+                          <span className={`inline-flex items-center rounded-md px-1.5 py-0.25 text-4xs font-semibold border ${c.status === 'PENDING'
                               ? 'bg-amber-50 text-amber-700 border-amber-200'
                               : c.status === 'BANKED'
                                 ? 'bg-green-50 text-green-700 border-green-200'
                                 : 'bg-red-50 text-red-700 border-red-200'
-                          }`}>
+                            }`}>
                             {c.status}
                           </span>
                         </div>
@@ -716,7 +718,7 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
                   <span>Due Tomorrow ({tomorrowChequesCount})</span>
                   <span className="font-mono text-sky-900 text-xs font-semibold">{formatLKR(tomorrowChequesAmount)}</span>
                 </h4>
-                
+
                 {tomorrowChequesList.length === 0 ? (
                   <p className="text-xs text-gray-400 italic py-4">No cheques due tomorrow.</p>
                 ) : (
@@ -729,13 +731,12 @@ export default function ChequesView({ cheques, onUpdateCheque, onDeleteCheque }:
                         </div>
                         <div className="flex justify-between items-center text-3xs text-gray-500 font-mono mt-0.5">
                           <span>Bank: <b>{c.bank}</b> (#{c.chequeNumber})</span>
-                          <span className={`inline-flex items-center rounded-md px-1.5 py-0.25 text-4xs font-semibold border ${
-                            c.status === 'PENDING'
+                          <span className={`inline-flex items-center rounded-md px-1.5 py-0.25 text-4xs font-semibold border ${c.status === 'PENDING'
                               ? 'bg-amber-50 text-amber-700 border-amber-200'
                               : c.status === 'BANKED'
                                 ? 'bg-green-50 text-green-700 border-green-200'
                                 : 'bg-red-50 text-red-700 border-red-200'
-                          }`}>
+                            }`}>
                             {c.status}
                           </span>
                         </div>
